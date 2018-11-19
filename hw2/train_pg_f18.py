@@ -11,7 +11,7 @@ import os
 import time
 import inspect
 from multiprocessing import Process
-
+			
 #============================================================================================#
 # Utilities
 #============================================================================================#
@@ -38,8 +38,13 @@ def build_mlp(input_placeholder, output_size, scope, n_layers, size, activation=
         Hint: use tf.layers.dense    
     """
     # YOUR CODE HERE
-    raise NotImplementedError
-    return output_placeholder
+    #raise NotImplementedError
+	with tf.variable_scope(scope):	
+	    in1 = tf.layers.Dense(units = 128, activation = activation)(input_placeholder)
+		in2 = tf.layers.Dense(units = 516, activation = activation)(in1)
+		output_placeholder = tf.nn.softmax(tf.layers.Dense(units = output_size)(in2))
+
+	return output_placeholder
 
 def pathlength(path):
     return len(path["reward"])
@@ -95,14 +100,14 @@ class Agent(object):
                 sy_ac_na: placeholder for actions
                 sy_adv_n: placeholder for advantages
         """
-        raise NotImplementedError
+        #raise NotImplementedError
         sy_ob_no = tf.placeholder(shape=[None, self.ob_dim], name="ob", dtype=tf.float32)
         if self.discrete:
             sy_ac_na = tf.placeholder(shape=[None], name="ac", dtype=tf.int32) 
         else:
             sy_ac_na = tf.placeholder(shape=[None, self.ac_dim], name="ac", dtype=tf.float32) 
         # YOUR CODE HERE
-        sy_adv_n = None
+        sy_adv_n = tf.placeholder(shape=[None], name='ad', dtype=tf.float32) 
         return sy_ob_no, sy_ac_na, sy_adv_n
 
 
@@ -134,9 +139,10 @@ class Agent(object):
                 Pass in self.n_layers for the 'n_layers' argument, and
                 pass in self.size for the 'size' argument.
         """
-        raise NotImplementedError
+        #raise NotImplementedError
         if self.discrete:
             # YOUR_CODE_HERE
+			build_mlp(sy_ob_no, self.env)
             sy_logits_na = None
             return sy_logits_na
         else:
